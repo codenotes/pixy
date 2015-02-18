@@ -26,6 +26,7 @@
 #include "chirpreceiver.hpp"
 
 #define PIXY_BLOCK_CAPACITY         250
+void usleep(int waitTime);
 
 class PixyInterpreter : public Interpreter
 {
@@ -47,6 +48,7 @@ class PixyInterpreter : public Interpreter
     */
   
     int init();
+	int init(int whichPixy);
     
     /**
       @brief  Terminates the USB connection to Pixy and
@@ -155,6 +157,7 @@ class PixyInterpreter : public Interpreter
       @param[in] count   Size of the 'blocks' array.
     */
     void add_color_code_blocks(const BlobB * blocks, uint32_t count);
+	
 };
 
 #endif

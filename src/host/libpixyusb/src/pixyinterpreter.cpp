@@ -17,6 +17,9 @@
 #include <stdio.h>
 #include "pixyinterpreter.hpp"
 
+
+
+
 PixyInterpreter::PixyInterpreter()
 {
   thread_die_  = false;
@@ -28,6 +31,34 @@ PixyInterpreter::~PixyInterpreter()
 {
   close();
 }
+
+
+int PixyInterpreter::init(int whichPixy)
+{
+	int USB_return_value;
+
+	if (thread_dead_ == false)
+	{
+		fprintf(stderr, "libpixy: Already initialized.");
+		return 0;
+	}
+
+	USB_return_value = link_.open2(whichPixy);
+
+	if (USB_return_value < 0) {
+		return USB_return_value;
+	}
+
+	receiver_ = new ChirpReceiver(&link_, this);
+
+	// Create the interpreter thread //
+
+	thread_dead_ = false;
+	thread_ = boost::thread(&PixyInterpreter::interpreter_thread, this);
+
+	return 0;
+}
+
 
 int PixyInterpreter::init()
 {

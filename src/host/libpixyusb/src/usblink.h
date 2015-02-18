@@ -27,6 +27,9 @@ public:
     ~USBLink();
 
     int open();
+	int open2(int pixnum); //0 or 1
+	int find2Pixies(int whichPix, libusb_device_handle ** handle); //greg
+
     virtual int send(const uint8_t *data, uint32_t len, uint16_t timeoutMs);
     virtual int receive(uint8_t *data, uint32_t len, uint16_t timeoutMs);
     virtual void setTimer();
@@ -35,6 +38,7 @@ public:
 private:
     libusb_context *m_context;
     libusb_device_handle *m_handle;
+	
 
     util::timer timer_;
 };
