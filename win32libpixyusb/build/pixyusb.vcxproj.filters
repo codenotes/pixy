@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\lib\pixy\src\host\libpixyusb\src\chirpreceiver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\lib\pixy\src\host\libpixyusb\src\pixyinterpreter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\lib\pixy\src\host\libpixyusb\src\pixy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\lib\pixy\src\host\libpixyusb\src\usblink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\lib\pixy\src\host\libpixyusb\src\utils\timer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\lib\pixy\src\common\chirp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stuff.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{501006AA-0EE5-4260-907F-E56DD72BD41A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="Debug\boost_chrono-vc120-mt-gd-1_57.lib" />
+    <Library Include="Debug\boost_system-vc120-mt-gd-1_57.lib" />
+    <Library Include="Debug\boost_thread-vc120-mt-gd-1_57.lib" />
+    <Library Include="Debug\libusb-1.0.lib" />
+  </ItemGroup>
+</Project>
