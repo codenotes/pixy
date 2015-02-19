@@ -1,3 +1,8 @@
+#ifdef ARM
+#define PIXY_EXPORT
+#endif
+
+
 //
 // begin license header
 //
@@ -31,7 +36,7 @@
 extern "C"
 {
 #endif
-
+	
   #define PIXY_MAX_SIGNATURE          7
 
   // Pixy x-y position values
@@ -92,7 +97,7 @@ extern "C"
     @return  PIXY_ERROR_USB_NO_DEVICE  USB Error: No device
   */
 	PIXY_EXPORT int pixy_init();
-
+	
 	PIXY_EXPORT int pixy_init2(int whichPxy);
 
   /**
