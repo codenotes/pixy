@@ -16,7 +16,7 @@ PREPROCESSOR_MACROS := DEBUG ARM
 INCLUDE_DIRS := C:/lib/boost_1_57_0_roborio/boost_1_57_0 C:/lib/pixy/src/host/libpixyusb/include C:/lib/pixy/src/host/libpixyusb/src	C:/lib/pixy/src/host/libpixyusb/src/util C:/lib/pixy/src/host/libpixyusb/include C:/lib/pixy/src/host/libpixyusb/../../common C:/lib/pixy/src/host/windows/
 
 
-LIBRARY_DIRS := C:/projects/pixyusblib/pixylibusb/pixylibusb/Debug  C:/projects/pixyusblib/pixylibusb/pixylibusb/booststaticlib
+LIBRARY_DIRS :=  C:/lib/pixy/roboriobuild/pixylibusb/pixylibusb/booststaticlib C:/lib/pixy/roboriobuild/pixylibusb/pixylibusb/Debug
 LIBRARY_NAMES := usb-1.0 pixylibusb boost_thread boost_chrono boost_system
 ADDITIONAL_LINKER_INPUTS := 
 MACOS_FRAMEWORKS := 

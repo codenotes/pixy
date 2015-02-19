@@ -1,4 +1,4 @@
-#include "pixylibusb.h"
+//#include "pixylibusb.h"
 #include <boost\chrono.hpp>
 
 /*
