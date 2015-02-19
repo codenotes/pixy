@@ -188,7 +188,14 @@ void PixyInterpreter::interpreter_thread()
 
     // Mutual exclusion for receiver_ object (Unlock) //
     chirp_access_mutex_.unlock();
-    usleep(15000); // wait for 15ms, ie give time for 
+    
+#ifdef ARM
+	boost::this_thread::sleep(boost::posix_time::milliseconds(15));
+#else
+	usleep(15000); // wait for 15ms, ie give time for 
+#endif
+  
+  
   }
 
   thread_dead_ = true;
@@ -363,7 +370,12 @@ void PixyInterpreter::add_color_code_blocks(const BlobB * blocks, uint32_t count
 
 int PixyInterpreter::blocks_are_new()
 {
+#ifdef ARM
+	boost::this_thread::sleep(boost::posix_time::milliseconds(15));
+#else
   usleep(100); // sleep a bit so client doesn't need to
+#endif
+
   if (blocks_are_new_) {
     // Fresh blocks!! :D //
     return 1;

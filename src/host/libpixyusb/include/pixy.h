@@ -18,6 +18,13 @@
 // end license header
 //
 
+#ifdef ARM
+#define PIXY_EXPORT
+#else
+#define PIXY_EXPORT __declspec(dllexport)
+#endif
+
+
 #ifndef __PIXY_H__
 #define __PIXY_H__
 

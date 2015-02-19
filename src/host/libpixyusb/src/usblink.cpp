@@ -185,6 +185,7 @@ int USBLink::find2Pixies(int whichPix, libusb_device_handle ** handle)
 int USBLink::open2(int pix)
 {
 	int r;
+
 	int return_value;
 #ifdef __MACOS__
 	const unsigned int MILLISECONDS_TO_SLEEP = 100;
