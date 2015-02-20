@@ -2,7 +2,9 @@
 //
 
 #include "stdafx.h"
+#include <algorithm>
 
+bool printFrame(int whichPix, int sig);
 
 //
 // begin license header
@@ -18,6 +20,45 @@
 //
 // end license header
 //
+
+
+template <typename T, typename Total, int N>
+class Moving_Average
+{
+public:
+	Moving_Average()
+		: num_samples_(0), total_(0)
+	{ }
+
+	void operator()(T sample)
+	{
+		if (num_samples_ < N)
+		{
+			samples_[num_samples_++] = sample;
+			total_ += sample;
+		}
+		else
+		{
+			T& oldest = samples_[num_samples_++ % N];
+			total_ += sample - oldest;
+			oldest = sample;
+		}
+	}
+
+	double get()
+	{
+		return total_ / std::min(num_samples_, N);
+	}
+
+	operator double() const { return total_ / std::min(num_samples_, N); }
+
+private:
+	T samples_[N];
+	int num_samples_;
+	Total total_;
+};
+
+Moving_Average<double, double, 100> mAverage;
 
 
 #define BLOCK_BUFFER_SIZE    25
@@ -119,11 +160,27 @@ int main(int argc, char * argv[])
 
   }
 
-  pixy_close2(0);
-  pixy_close2(1);
-  return 0;
+  //pixy_close2(0);
+  //pixy_close2(1);
+  //return 0;
 
  //greg, cut short the block gathering.
+  printf("Which cam, 0 or 1 or both (3):");
+  whichPix=getchar()-0x30;
+  printf("Cam:%c\tFrame:\tSignature:\tX:\tY:\tWidth:\t:Height:\tAngle:\n",whichPix+99);
+
+  while (run_flag)
+  {
+	  if (whichPix == 3)//both
+	  {
+		  printFrame(0, 1); //note that we have a hardcoded signature 2nd param right now.  Need to make that custom.
+		  printFrame(1, 1);
+	  }
+	  else
+		  printFrame(whichPix, 1);
+  }
+
+
 
 #if 0
 	// Pixy Command Examples //
@@ -164,42 +221,209 @@ int main(int argc, char * argv[])
   }
 #endif
 
-  printf("Frame:\tSignature:\tX:\tY:\tWidth:\t:Height:\tAngle:\n");
-	while (run_flag)
+	
+	//pixy_close2(whichPix);
+
+	pixy_close2(0);
+	pixy_close2(1);
+
+}
+
+
+static float DisparityToDistance(float disparity_pixels,
+	float focal_length_mm,
+	float sensor_pixels_per_mm,
+	float baseline_mm)
+{
+	float focal_length_pixels = focal_length_mm * sensor_pixels_per_mm;
+	float distance_mm = baseline_mm * focal_length_pixels / disparity_pixels;
+	return(distance_mm);
+}
+
+float dist2(int disp)
+{
+	float focal_length_mm = 2.8f;
+		float sensor_pixels_per_mm = 3.016;
+		float scale = .15;
+		float baseline_mm = 146.685;
+		return baseline_mm * (focal_length_mm * sensor_pixels_per_mm) / (disp*scale);
+
+
+}
+//float distance_mm = baseline_mm * (focal_length_mm * sensor_pixels_per_mm) / disparity_pixels;
+
+//x = 146.685*(2.8 * 3.016)/137.16
+//x=9
+//so if I have 60, does that mean I need to apply a scale factor of .15 to disparties from camera to make distance work?
+//at 28 I need .3 scale
+//seems like I am just counteracting the sensor_pixes per mm...hmmm. 1/10th of that anyway. 
+//146.685 distance between cams right now
+//pixycam is 2.8 FOV
+//pixels per mm 3.016 maybe according to docs
+
+//box is about 1370mm away
+
+float distanceCalc(int whichPix, int x)
+{
+	float sensor_pixels_per_mm = 3.016;
+	double baseline_mm = 200;
+	static int last_x1 = 0;
+	static int last_x2 = 0;
+	float scale = .3;
+	double disp;
+	double av;
+
+	if (whichPix==0) last_x1 = x;
+	else
+		last_x2 = x;
+
+
+	disp = (double)abs(last_x1 - last_x2);
+
+	mAverage(disp);
+	//Range = ( Focal length x Camera baseline ) / Disparity
+
+	av = (double)mAverage;
+	printf("\ncurrent:%.2f avged:%.2f dist:%.2f\n", disp, av, 
+		baseline_mm * (2.8) / (av) * 100
+		);
+
+	return (2.8 * 146.685 * sensor_pixels_per_mm) / (float)abs(last_x1 - last_x2)*scale*10;
+	//return last_x1 - last_x2;
+
+
+
+}
+
+//bool printFrame(int whichPix, int sig, int &x, int &y, int &width, int &height )
+bool printFrame(int whichPix, int sig)
+{
+	int      i = 0;
+	int      index;
+	int      blocks_copied;
+	int      pixy_init_status;
+	char     buf[128];
+	float dist;
+	
+
+	//while (run_flag)
 	{
 		// Wait for new blocks to be available //
-		while (!pixy_blocks_are_new2(whichPix) && run_flag);
+		//while (!pixy_blocks_are_new2(whichPix) );
+
+		if (!pixy_blocks_are_new2(whichPix))
+		{
+	//		printf("no blocks, returning\n");
+			return false;
+
+		}
 
 		// Get blocks from Pixy //
-		blocks_copied = pixy_get_blocks2(whichPix,BLOCK_BUFFER_SIZE, &blocks[0]);
+		blocks_copied = pixy_get_blocks2(whichPix, BLOCK_BUFFER_SIZE, &blocks[0]);
 
 		if (blocks_copied < 0) {
 			// Error: pixy_get_blocks //
 			printf("pixy_get_blocks(): ");
 			pixy_error(blocks_copied);
+			return false;
+		}
+		else if (blocks_copied == 0)
+		{
+			return false;
 		}
 
 		// Display received blocks //
-		//below, frame
-		printf("%d\t", i);
+		
 		//printf("%d:\t", i);
-		for (index = 0; index != blocks_copied; ++index) 
+		for (index = 0; index != blocks_copied; ++index)
 		{
-		//	blocks[index].print(buf);
+			if (blocks[index].signature != sig)
+				continue;
+			//	blocks[index].print(buf);
 			//printf("  %s\n", buf);
 
-			printf("%d\t%d\t%d\t%d\t%d\t%d\n", blocks[index].signature,
+			dist = distanceCalc(whichPix, blocks[index].x);
+
+			//printf("->%d\t", index);//frame
+			printf("%c\t%d\t%d\t%d\t%d\t%d\t%d%f\n", whichPix + 65, //'A' or 'B' ascii
+				blocks[index].signature,
 				blocks[index].x,
 				blocks[index].y,
 				blocks[index].width,
 				blocks[index].height,
-				blocks[index].angle
-
+				blocks[index].angle,
+				dist
 				);
 
 
 		}
 		i++;
 	}
-	pixy_close2(whichPix);
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//
+//
+//
+//
+//while (run_flag)
+//{
+//	// Wait for new blocks to be available //
+//	while (!pixy_blocks_are_new2(whichPix) && run_flag);
+//
+//	// Get blocks from Pixy //
+//	blocks_copied = pixy_get_blocks2(whichPix, BLOCK_BUFFER_SIZE, &blocks[0]);
+//
+//	if (blocks_copied < 0) {
+//		// Error: pixy_get_blocks //
+//		printf("pixy_get_blocks(): ");
+//		pixy_error(blocks_copied);
+//	}
+//
+//	// Display received blocks //
+//	//below, frame
+//	printf("%d\t", i);
+//	//printf("%d:\t", i);
+//	for (index = 0; index != blocks_copied; ++index)
+//	{
+//		//	blocks[index].print(buf);
+//		//printf("  %s\n", buf);
+//
+//		printf("%c\t%d\t%d\t%d\t%d\t%d\t%d\n", whichPix + 99, //'A' or 'B' ascii
+//			blocks[index].signature,
+//			blocks[index].x,
+//			blocks[index].y,
+//			blocks[index].width,
+//			blocks[index].height,
+//			blocks[index].angle
+//
+//			);
+//
+//
+//	}
+//	i++;
+//}
