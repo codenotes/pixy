@@ -66,14 +66,14 @@ int PixyInterpreter::init()
 
   if(thread_dead_ == false) 
   {
-    fprintf(stderr, "libpixy: Already initialized.");
-    return 0;
+	fprintf(stderr, "libpixy: Already initialized.");
+	return 0;
   }
 
   USB_return_value = link_.open();
 
   if(USB_return_value < 0) {
-    return USB_return_value;
+	return USB_return_value;
   }
 
   receiver_ = new ChirpReceiver(&link_, this);
@@ -91,15 +91,15 @@ void PixyInterpreter::close()
   // Is the interpreter thread alive? //
   if(thread_.joinable()) 
   {
-    // Thread is running, tell the interpreter thread to die. //
-    thread_die_ = true;
-    thread_.join();
+	// Thread is running, tell the interpreter thread to die. //
+	thread_die_ = true;
+	thread_.join();
   }
   
   if (receiver_)  
   {
-    delete receiver_;
-    receiver_ = NULL;
+	delete receiver_;
+	receiver_ = NULL;
   }
 }
 
@@ -111,9 +111,9 @@ int PixyInterpreter::get_blocks(int max_blocks, Block * blocks)
   // Check parameters //
 
   if(max_blocks < 0 || blocks == 0) {
-    return PIXY_ERROR_INVALID_PARAMETER;
+	return PIXY_ERROR_INVALID_PARAMETER;
   }
-    
+	
   // Prevent other thread from accessing 'blocks_' while we're using it. //
 
   blocks_access_mutex_.lock();
@@ -123,7 +123,7 @@ int PixyInterpreter::get_blocks(int max_blocks, Block * blocks)
   // Copy blocks //
   
   for (index = 0; index != number_of_blocks_to_copy; ++index) {
-    memcpy(&blocks[index], &blocks_[index], sizeof(Block));
+	memcpy(&blocks[index], &blocks_[index], sizeof(Block));
   }
 
   blocks_are_new_ = false;
@@ -160,9 +160,9 @@ int PixyInterpreter::send_command(const char * name, va_list args)
 
   // Was there an error requesting procedure id? //
   if (procedure_id < 0) {
-    // Request error //
-    va_end(arguments);
-    return PIXY_ERROR_INVALID_COMMAND;
+	// Request error //
+	va_end(arguments);
+	return PIXY_ERROR_INVALID_COMMAND;
   }
 
   // Execute chirp synchronous remote procedure call //
@@ -181,14 +181,14 @@ void PixyInterpreter::interpreter_thread()
   // Read from Pixy USB connection using the Chirp //
   // protocol until we're told to stop.            //
   while(!thread_die_) {
-    // Mutual exclusion for receiver_ object (Lock) //
-    chirp_access_mutex_.lock();
+	// Mutual exclusion for receiver_ object (Lock) //
+	chirp_access_mutex_.lock();
 
-    receiver_->service(false);
+	receiver_->service(false);
 
-    // Mutual exclusion for receiver_ object (Unlock) //
-    chirp_access_mutex_.unlock();
-    usleep(15000); // wait for 15ms, ie give time for 
+	// Mutual exclusion for receiver_ object (Unlock) //
+	chirp_access_mutex_.unlock();
+	usleep(15000); // wait for 15ms, ie give time for 
   }
 
   thread_dead_ = true;
@@ -201,44 +201,44 @@ void PixyInterpreter::interpret_data(const void * chirp_data[])
   uint32_t chirp_type;
   if (chirp_data[0]) {
 
-    chirp_message = Chirp::getType(chirp_data[0]);
+	chirp_message = Chirp::getType(chirp_data[0]);
 
-    switch(chirp_message) {
-      
-      case CRP_TYPE_HINT:
-        
-        chirp_type = * static_cast<const uint32_t *>(chirp_data[0]);
+	switch(chirp_message) {
+	  
+	  case CRP_TYPE_HINT:
+		
+		chirp_type = * static_cast<const uint32_t *>(chirp_data[0]);
 
-        switch(chirp_type) {
+		switch(chirp_type) {
 
-          case FOURCC('B', 'A', '8', '1'):
-            break;
-          case FOURCC('C', 'C', 'Q', '1'):
-            break;
-          case FOURCC('C', 'C', 'B', '1'):
-            interpret_CCB1(chirp_data + 1);
-            break;
-          case FOURCC('C', 'C', 'B', '2'):
-            interpret_CCB2(chirp_data + 1);
-            break;
-          case FOURCC('C', 'M', 'V', '1'):
-            break;
-          default:
-            printf("libpixy: Chirp hint [%u] not recognized.\n", chirp_type);
-            break;
-        }
+		  case FOURCC('B', 'A', '8', '1'):
+			break;
+		  case FOURCC('C', 'C', 'Q', '1'):
+			break;
+		  case FOURCC('C', 'C', 'B', '1'):
+			interpret_CCB1(chirp_data + 1);
+			break;
+		  case FOURCC('C', 'C', 'B', '2'):
+			interpret_CCB2(chirp_data + 1);
+			break;
+		  case FOURCC('C', 'M', 'V', '1'):
+			break;
+		  default:
+			printf("libpixy: Chirp hint [%u] not recognized.\n", chirp_type);
+			break;
+		}
 
-        break;
+		break;
 
-      case CRP_HSTRING:
+	  case CRP_HSTRING:
 
-        break;
-      
-      default:
-       
-       fprintf(stderr, "libpixy: Unknown message received from Pixy: [%u]\n", chirp_message);
-       break;
-    }
+		break;
+	  
+	  default:
+	   
+	   fprintf(stderr, "libpixy: Unknown message received from Pixy: [%u]\n", chirp_message);
+	   break;
+	}
   } 
 }
 
@@ -305,29 +305,29 @@ void PixyInterpreter::add_normal_blocks(const BlobA * blocks, uint32_t count)
 
   for (index = 0; index != count; ++index) {
 
-    // Decode CCB1 'Normal' Signature Type //
+	// Decode CCB1 'Normal' Signature Type //
 
-    block.type      = PIXY_BLOCKTYPE_NORMAL;
-    block.signature = blocks[index].m_model;
-    block.width     = blocks[index].m_right - blocks[index].m_left;
-    block.height    = blocks[index].m_bottom - blocks[index].m_top;
-    block.x         = blocks[index].m_left + block.width / 2;
-    block.y         = blocks[index].m_top + block.height / 2;
+	block.type      = PIXY_BLOCKTYPE_NORMAL;
+	block.signature = blocks[index].m_model;
+	block.width     = blocks[index].m_right - blocks[index].m_left;
+	block.height    = blocks[index].m_bottom - blocks[index].m_top;
+	block.x         = blocks[index].m_left + block.width / 2;
+	block.y         = blocks[index].m_top + block.height / 2;
 
-    // Angle is not a valid parameter for 'Normal'  //
-    // signature types. Setting to zero by default. //
-    block.angle     = 0;
-      
-    // Store new block in block buffer //
+	// Angle is not a valid parameter for 'Normal'  //
+	// signature types. Setting to zero by default. //
+	block.angle     = 0;
+	  
+	// Store new block in block buffer //
 
-    if (blocks_.size() == PIXY_BLOCK_CAPACITY) {
-      // Blocks buffer is full - replace oldest received block with newest block //
-      blocks_.erase(blocks_.begin());
-      blocks_.push_back(block);
-    } else {
-      // Add new block to blocks buffer //
-      blocks_.push_back(block);
-    }
+	if (blocks_.size() == PIXY_BLOCK_CAPACITY) {
+	  // Blocks buffer is full - replace oldest received block with newest block //
+	  blocks_.erase(blocks_.begin());
+	  blocks_.push_back(block);
+	} else {
+	  // Add new block to blocks buffer //
+	  blocks_.push_back(block);
+	}
   }
 }
 
@@ -335,29 +335,29 @@ void PixyInterpreter::add_color_code_blocks(const BlobB * blocks, uint32_t count
 {
   uint32_t index;
   Block    block;
-    
+	
   for (index = 0; index != count; ++index) {
 
-    // Decode 'Color Code' Signature Type //
+	// Decode 'Color Code' Signature Type //
 
-    block.type      = PIXY_BLOCKTYPE_COLOR_CODE;
-    block.signature = blocks[index].m_model;
-    block.width     = blocks[index].m_right - blocks[index].m_left;
-    block.height    = blocks[index].m_bottom - blocks[index].m_top;
-    block.x         = blocks[index].m_left + block.width / 2;
-    block.y         = blocks[index].m_top + block.height / 2;
-    block.angle     = blocks[index].m_angle;
+	block.type      = PIXY_BLOCKTYPE_COLOR_CODE;
+	block.signature = blocks[index].m_model;
+	block.width     = blocks[index].m_right - blocks[index].m_left;
+	block.height    = blocks[index].m_bottom - blocks[index].m_top;
+	block.x         = blocks[index].m_left + block.width / 2;
+	block.y         = blocks[index].m_top + block.height / 2;
+	block.angle     = blocks[index].m_angle;
 
-    // Store new block in block buffer //
+	// Store new block in block buffer //
 
-    if (blocks_.size() == PIXY_BLOCK_CAPACITY) {
-      // Blocks buffer is full - replace oldest received block with newest block //
-      blocks_.erase(blocks_.begin());
-      blocks_.push_back(block);
-    } else {
-      // Add new block to blocks buffer //
-      blocks_.push_back(block);
-    }
+	if (blocks_.size() == PIXY_BLOCK_CAPACITY) {
+	  // Blocks buffer is full - replace oldest received block with newest block //
+	  blocks_.erase(blocks_.begin());
+	  blocks_.push_back(block);
+	} else {
+	  // Add new block to blocks buffer //
+	  blocks_.push_back(block);
+	}
   }
 }
 
@@ -365,10 +365,10 @@ int PixyInterpreter::blocks_are_new()
 {
   usleep(100); // sleep a bit so client doesn't need to
   if (blocks_are_new_) {
-    // Fresh blocks!! :D //
-    return 1;
+	// Fresh blocks!! :D //
+	return 1;
   } else {
-    // Stale blocks... :\ //
-    return 0;
+	// Stale blocks... :\ //
+	return 0;
   }
 }
