@@ -4,6 +4,27 @@
 #include "stdafx.h"
 #include <algorithm>
 
+#define ROS_INDIGO_EXPORTS __declspec(dllimport)
+
+namespace ROSInterop
+{
+#include "ROSInteropExport.h"
+}
+
+
+class ConsoleInputBuffer
+{
+public:
+	bool    readLine(std::string& line);
+protected:
+	void    addPendingInputToBuffer(void);
+	bool    readNextLineFromBuffer(std::string& line);
+
+	std::string m_buffer;
+};
+
+
+
 bool printFrame(int whichPix, int sig);
 
 //
@@ -20,6 +41,41 @@ bool printFrame(int whichPix, int sig);
 //
 // end license header
 //
+
+#pragma comment(lib, R"(C:\Users\gbrill\Source\Repos\ROSIndigo\ROSIndigoDLL\Debug\ROSClientInterop.lib)")
+
+
+void get_keypress(unsigned short& virtual_key, unsigned long& control_key)
+{
+	HANDLE input_handle = GetStdHandle(STD_INPUT_HANDLE); // handle to input/output buffer
+	DWORD events = 0;			// how many events took place
+	INPUT_RECORD input_record;	// a record of input events
+	DWORD input_size = 1;		// how many characters to read
+
+	bool not_a_keypress = true;
+
+	do
+	{
+		// Stop from echoing.
+		FlushConsoleInputBuffer(input_handle);
+		printf("1\n");
+		
+		ReadConsoleInput(input_handle, &input_record, input_size, &events);
+		printf("2\n");
+
+		control_key = input_record.Event.KeyEvent.dwControlKeyState;
+		if (control_key == SCROLLLOCK_ON || control_key == NUMLOCK_ON)
+		{ // Warn user to turn off scroll lock/num lock.
+			throw std::runtime_error("Please turn scroll lock/num lock off.");
+		}
+		if (input_record.EventType == KEY_EVENT && input_record.Event.KeyEvent.bKeyDown)
+		{ // A key was pressed, so return it.
+			virtual_key = input_record.Event.KeyEvent.wVirtualKeyCode;
+			// Already got control_key above.
+			not_a_keypress = false;
+		}
+	} while (not_a_keypress);
+}
 
 
 template <typename T, typename Total, int N>
@@ -58,7 +114,8 @@ private:
 	Total total_;
 };
 
-Moving_Average<double, double, 100> mAverage;
+Moving_Average<double, double, 100> mAverageX;
+Moving_Average<double, double, 100> mAverageY;
 
 
 #define BLOCK_BUFFER_SIZE    25
@@ -75,7 +132,50 @@ void handle_SIGINT(int unused)
 	run_flag = false;
 }
 
+//#pragma comment(lib, "DelayImp.lib")
+//#pragma comment(linker, "/DelayLoad:ROSClientInterop.Dll")
+//#pragma comment(linker, "/Delay:unload")
+
+
+bool bRun = true;
+
+
+
 int main(int argc, char * argv[])
+{
+
+	ROSInterop::ROSInit(argc, (const char**)argv, "libpixy");
+	ROSInterop::spinPublisher("pixy", "e45d45a5a1ce597b249e23fb30fc871f", "geometry_msgs/Pose",
+		"geometry_msgs/Pose", 20, 10);
+
+	ROSInterop::sleepThread(2000);
+
+	ROSInterop::createKeyboardMonitor();
+	
+	int c=0,i=0;
+
+	while (c!=32) //cancel with space bar
+	{
+	
+		c = ROSInterop::getKeyPressed(); //nonblocking keyboard monitor.
+
+		printf("%d\n", c);
+
+
+		ROSInterop::ROSPublishPos("pixy", i++, 2, 3, 1, 2, 3, 4);
+		ROSInterop::sleepThread(550);
+
+	}
+
+	ROSInterop::terminateKeyboardMonitor();
+	ROSInterop::notifyPublisherQueue("pixy", 0); //kill publisher
+	ROSInterop::sleepThread(1000);
+
+}
+
+
+
+int main_(int argc, char * argv[])
 {
 	int      i = 0;
 	int      index;
@@ -84,6 +184,8 @@ int main(int argc, char * argv[])
 	char     buf[128];
 	int whichPix = 0;
 
+//	int x=ROSInterop::UnityTest();
+	
 	// Catch CTRL+C (SIGINT) signals //
 	signal(SIGINT, handle_SIGINT);
 
@@ -166,7 +268,12 @@ int main(int argc, char * argv[])
 
  //greg, cut short the block gathering.
   printf("Which cam, 0 or 1 or both (3):");
-  whichPix=getchar()-0x30;
+  
+  
+  //whichPix=getchar()-0x30;
+  whichPix = 3;
+  
+  
   printf("Cam:%c\tFrame:\tSignature:\tX:\tY:\tWidth:\t:Height:\tAngle:\n",whichPix+99);
 
   while (run_flag)
@@ -266,12 +373,15 @@ float dist2(int disp)
 float distanceCalc(int whichPix, int x)
 {
 	float sensor_pixels_per_mm = 3.016;
-	double baseline_mm = 200;
+	double baseline_mm = 203.2;
 	static int last_x1 = 0;
 	static int last_x2 = 0;
 	float scale = .3;
+	double fov =  2.55; //says fov is 2.8 but I dunno.  playig with this number to see if I get diff results
+	
 	double disp;
 	double av;
+	double dist;
 
 	if (whichPix==0) last_x1 = x;
 	else
@@ -280,15 +390,18 @@ float distanceCalc(int whichPix, int x)
 
 	disp = (double)abs(last_x1 - last_x2);
 
-	mAverage(disp);
+	mAverageX(disp);
 	//Range = ( Focal length x Camera baseline ) / Disparity
 
-	av = (double)mAverage;
-	printf("\ncurrent:%.2f avged:%.2f dist:%.2f\n", disp, av, 
-		baseline_mm * (2.8) / (av) * 100
+	av = (double)mAverageX;
+	dist = baseline_mm * (fov) / (av)* 100;
+
+	printf("\ncurrent:%.2f avged:%.2f dist:%.2f inches:%.2f\n", disp, av, 
+		dist, dist * 0.039370f
 		);
 
-	return (2.8 * 146.685 * sensor_pixels_per_mm) / (float)abs(last_x1 - last_x2)*scale*10;
+	//return (2.8 * 146.685 * sensor_pixels_per_mm) / (float)abs(last_x1 - last_x2)*scale*10;
+	return dist;
 	//return last_x1 - last_x2;
 
 
@@ -343,6 +456,7 @@ bool printFrame(int whichPix, int sig)
 			//printf("  %s\n", buf);
 
 			dist = distanceCalc(whichPix, blocks[index].x);
+			mAverageY(blocks[index].y);
 
 			//printf("->%d\t", index);//frame
 			printf("%c\t%d\t%d\t%d\t%d\t%d\t%d%f\n", whichPix + 65, //'A' or 'B' ascii
