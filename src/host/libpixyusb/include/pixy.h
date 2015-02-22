@@ -1,3 +1,6 @@
+#ifdef ARM
+#define PIXY_EXPORT
+#endif
 //
 // begin license header
 //
@@ -24,6 +27,10 @@
 #endif // _WIN32
 
 #include <pixydefs.h>
+
+//#ifdef ARM
+
+//#endif
 
 // Pixy C API //
 

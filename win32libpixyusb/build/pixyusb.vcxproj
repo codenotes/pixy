@@ -77,7 +77,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\lib\pixy\src\host\libpixyusb\src;C:\lib\pixy\src\host\libpixyusb\src\util;C:\lib\pixy\src\host\libpixyusb\include;C:\lib\pixy\src\host\libpixyusb\..\..\common;C:\boost_1_57_0;C:\lib\pixy\src\host\windows;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\lib\pixy\src\host\libpixyusb\src;C:\lib\pixy\src\host\libpixyusb\src\util;C:\lib\pixy\src\host\libpixyusb\include;C:\lib\pixy\src\host\libpixyusb\..\..\common;C:\boost_1_57_0;C:\lib\pixy\src\host\windows;C:\local\boost_1_57_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
