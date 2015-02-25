@@ -1,0 +1,2 @@
+additional options in CL where:
+-Zm200 -Wno-unused-parameter -mno-ms-bitfields -mno-ms-bitfields -O0 -w34100 -w34189
