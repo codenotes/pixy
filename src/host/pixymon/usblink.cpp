@@ -18,7 +18,8 @@
 #include "sleeper.h"
 #include "pixydefs.h"
 
-
+extern std::vector<libusb_device*> g_cams;
+extern int gCamera;
 
 USBLink::USBLink()
 {
@@ -65,6 +66,41 @@ int USBLink::open()
     return 0;
 }
 
+int USBLink::open2()
+{
+	libusb_init(&m_context);
+	//libusb_device_handle handle;
+	qDebug() << "open2(), opening camera:" << gCamera << "\n";
+	int r = libusb_open(g_cams[gCamera], &m_handle);
+
+	//m_handle = libusb_open_device_with_vid_pid(m_context, PIXY_VID, PIXY_DID);
+	
+	if (m_handle == NULL)
+	{
+		qDebug() << "failed to open handle.\n";
+		return -1;
+	}
+#ifdef __MACOS__
+	libusb_reset_device(m_handle);
+	Sleeper::msleep(100);
+#endif
+	if (libusb_set_configuration(m_handle, 1)<0)
+	{
+		libusb_close(m_handle);
+		m_handle = 0;
+		return -1;
+	}
+	if (libusb_claim_interface(m_handle, 1)<0)
+	{
+		libusb_close(m_handle);
+		m_handle = 0;
+		return -1;
+	}
+#ifdef __LINUX__
+	libusb_reset_device(m_handle);
+#endif
+	return 0;
+}
 
 
 int USBLink::send(const uint8_t *data, uint32_t len, uint16_t timeoutMs)

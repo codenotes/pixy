@@ -41,11 +41,16 @@
     <ClCompile Include="libusbtest.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConsoleInputBuffer.cpp">
+    <ClCompile Include="pixytemplates.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Library Include="..\build\Debug\libusb-1.0.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="pixytemplates.tm">
+      <Filter>Source Files</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

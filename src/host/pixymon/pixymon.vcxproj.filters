@@ -200,9 +200,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="aboutdialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="..\..\common\blob.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -233,15 +230,6 @@
     <ClInclude Include="..\..\common\colorlut.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="configdialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="connectevent.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="console.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="dataexport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -257,18 +245,12 @@
     <ClInclude Include="flash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="interpreter.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="..\windows\libusb.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\common\link.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="mainwindow.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="monmodule.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -296,9 +278,6 @@
     <ClInclude Include="reader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="renderer.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="..\..\common\simplevector.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -311,20 +290,6 @@
     <ClInclude Include="usblink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <CustomBuild Include="videowidget.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="about.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="configdialog.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
-    <CustomBuild Include="mainwindow.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <None Include="icons\config.png">
@@ -345,28 +310,32 @@
     <None Include="icons\raw.png">
       <Filter>Resource Files</Filter>
     </None>
-    <CustomBuild Include="resources.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
     <None Include="icons\stop.png">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_about.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_configdialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_camselect.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_about.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="Text.txt" />
+    <Text Include="about.ui">
+      <Filter>Form Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>

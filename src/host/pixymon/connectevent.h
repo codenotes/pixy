@@ -34,13 +34,14 @@ public:
 
 signals:
     void connected(Device device, bool state);
+	void pixycamsFound();
 
 protected:
     virtual void run();
 
 private:
     void emitConnected(Device dev, bool state);
-
+	int find2Pixies();
     libusb_context *m_context;
     MainWindow *m_main;
     unsigned int m_sleep;

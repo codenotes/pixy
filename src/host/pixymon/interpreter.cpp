@@ -31,6 +31,7 @@
 
 QString printType(uint32_t val, bool parens=false);
 
+
 Interpreter::Interpreter(ConsoleWidget *console, VideoWidget *video, MonParameterDB *data, const QString &initScript) :
     m_mutexProg(QMutex::Recursive)
 {
@@ -557,7 +558,8 @@ void Interpreter::run()
         uint16_t *ver;
         uint32_t verLen, responseInt;
 
-        if (m_link.open()<0)
+      //  if (m_link.open()<0)
+		if (m_link.open2()<0) //greg
             throw std::runtime_error("Unable to open USB device.");
         m_chirp = new ChirpMon(this, &m_link);        
 

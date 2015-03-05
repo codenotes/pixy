@@ -25,6 +25,6 @@
 
 #include <iostream>
 #include <libusb.h>
-
+#include "wstp.h"
 
 // TODO: reference additional headers your program requires here

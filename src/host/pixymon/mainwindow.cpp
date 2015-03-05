@@ -12,6 +12,7 @@
 //
 // end license header
 //
+#pragma warning( disable : 4083)
 
 #include <stdexcept>
 #include "debug.h"
@@ -38,8 +39,22 @@
 
 #include "parameters.h"
 #include "paramfile.h"
+#include "ui_camselect.h"
 
 extern ChirpProc c_grabFrame;
+MainWindow * gMain;
+int gCamera = -1; 
+extern std::vector<libusb_device*> g_cams;
+
+void MainWindow ::logConsole(char * message)
+{
+
+	QMessageBox msgBox;
+	msgBox.setText(message);
+	msgBox.exec();
+
+	//m_console->print(message);
+}
 
 MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
     QMainWindow(parent),
@@ -54,6 +69,8 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
 
     m_ui->setupUi(this);
     setWindowTitle(PIXYMON_TITLE);
+
+	gMain = this;
 
     m_interpreter = NULL;
     m_flash = NULL;
@@ -87,7 +104,13 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
     m_ui->actionConfigure->setIcon(QIcon(":/icons/icons/config.png"));
     m_ui->toolBar->addAction(m_ui->actionConfigure);
 
-    updateButtons();
+
+	m_ui->toolBar->addAction(m_ui->actionCamera_1);
+	m_ui->toolBar->addAction(m_ui->actionCamera2);
+	m_ui->actionCamera2->setEnabled(false);
+	m_ui->actionCamera_1->setEnabled(false);
+
+    updateButtons();  
 
     m_parameters.add("Pixy start command", PT_STRING, "runprogArg 8 1",
         "The command that is sent to Pixy upon initialization");
@@ -98,16 +121,7 @@ MainWindow::MainWindow(int argc, char *argv[], QWidget *parent) :
         m_console->error("No Pixy devices have been detected.\n");
 }
 
-MainWindow::~MainWindow()
-{
-    if (m_connect)
-        delete m_connect;
 
-    DBG("deleting mainWindow");
-    // we don't delete any of the widgets because the parent deletes it's children upon deletion
-
-    delete m_settings;
-}
 
 void MainWindow::parseCommandline(int argc, char *argv[])
 {
@@ -285,9 +299,81 @@ void MainWindow::connectPixyDFU(bool state)
         m_connect = new ConnectEvent(this);
         m_pixyDFUConnected = false;
     }
-
+	 
     updateButtons();
 }
+
+void MainWindow::SwitchCameraClose()
+{
+	if (m_configDialog)
+	{
+		m_configDialog->close();
+		m_configDialog = NULL;
+	}
+
+	if (m_interpreter)
+	{
+		//m_waiting = WAIT_EXITTING;
+		//event->ignore(); // ignore event
+		DBG("closing interpreter");
+		m_interpreter->close();
+	}
+
+	if (m_connect)
+		delete m_connect;
+
+	m_connect = new ConnectEvent(this);
+}
+
+void MainWindow::cam1()
+{
+	 
+	if (gCamera == 1)//we were connected to other camera, we need to return to our disconnected state
+	{
+
+		SwitchCameraClose();
+
+	}
+
+	gCamera = 0;
+	//m_ui->actionCamera2->setEnabled(false);
+	m_console->print("Selecting camera 0, about to connect...\n");
+	connectPixy(PIXY);
+	/*QMessageBox msgBox;
+	msgBox.setText("The document has been modified.");
+	msgBox.exec();*/
+}
+
+MainWindow::~MainWindow()
+{
+	if (m_connect)
+		delete m_connect;
+
+	DBG("deleting mainWindow");
+	// we don't delete any of the widgets because the parent deletes it's children upon deletion
+
+	delete m_settings;
+}
+void MainWindow::cam2()
+{
+	if (gCamera == 0)//we were connected to other camera, we need to return to our disconnected state
+	{
+		SwitchCameraClose();
+
+	}
+
+	//m_ui->actionCamera_1->setEnabled(false);
+	m_console->print("Selecting Camera 1, about to connect...\n");
+	gCamera = 1;
+	connectPixy(PIXY);
+/*
+	auto temp = new QDialog(0, 0);
+	Ui_Dialog d;
+	d.setupUi(temp);
+	d.comboBox->addItem(QString("blah"));
+	temp->show();*/
+
+	}
 
 void MainWindow::connectPixy(bool state)
 {
@@ -349,7 +435,7 @@ void MainWindow::connectPixy(bool state)
             m_pixyConnected = false;
         }
     }
-    else // disconnect
+    else // disconnect 
     {
         m_console->error("Pixy has stopped working.\n");
         if (m_interpreter)
@@ -430,11 +516,37 @@ void MainWindow::handleConnected(Device device, bool state)
         m_connect = NULL;
     }
 
-    if (device==PIXY)
-        connectPixy(state);
+	if (device == PIXY)
+	{
+		qDebug() << "device found and is pixy but going to wait until a camera is selected to connect\n";
+        //connectPixy(state)
+	}
     else if (device==PIXY_DFU)
         connectPixyDFU(state);
 
+}
+
+void MainWindow::handleCameraButtons() //called from connectevent when a connection exists.
+{
+	int size = g_cams.size();
+	qDebug() << "handleCameraButtons(). I see this many cameras:"<<size<<"\n";
+
+	
+	if (size == 0)
+	{
+		m_ui->actionCamera_1->setEnabled(false);
+		m_ui->actionCamera2->setEnabled(false);
+	}
+	else if (size == 1)
+	{
+		m_ui->actionCamera_1->setEnabled(true);
+		m_ui->actionCamera2->setEnabled(false);
+	}
+	else if (size == 2)
+	{
+		m_ui->actionCamera_1->setEnabled(true);
+		m_ui->actionCamera2->setEnabled(true);
+	}
 }
 
 void MainWindow::handleConfigDialogFinished()

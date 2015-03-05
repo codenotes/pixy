@@ -31,6 +31,7 @@ public:
     virtual int receive(uint8_t *data, uint32_t len, uint16_t timeoutMs);
     virtual void setTimer();
     virtual uint32_t getTimer();
+	int		open2();
 
 private:
     libusb_context *m_context;

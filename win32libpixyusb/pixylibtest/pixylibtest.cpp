@@ -1,8 +1,15 @@
 // pixylibtest.cpp : Defines the entry point for the console application.
 //
+#pragma warning(disable:4244)
+#pragma warning(disable:4101)
+#pragma warning(disable:4305)
+#pragma warning(disable:4102)
+#pragma warning(disable:4715)
 
 #include "stdafx.h"
 #include <algorithm>
+
+#pragma comment(lib, "wstp32i4.lib")
 
 #define ROS_INDIGO_EXPORTS __declspec(dllimport)
 

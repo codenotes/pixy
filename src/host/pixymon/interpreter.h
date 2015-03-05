@@ -75,7 +75,13 @@ class Interpreter : public QThread
 
 public:
     Interpreter(ConsoleWidget *console, VideoWidget *video, MonParameterDB *data, const QString &initScript="");
+		
     ~Interpreter();
+
+	void setCam(int cam)
+	{
+		m_cam = cam;
+	}
 
     // local program business
     int beginLocalProgram();
@@ -139,6 +145,7 @@ protected:
     virtual void run();
 
 private:
+	int m_cam = 0;
     void handleHelp();
     void handleCall(const QStringList &argv);
     void listProgram();
@@ -166,6 +173,9 @@ private:
     void handleLoadParams(); // load from Pixy
     void handleUpdateParam();
     void sendMonModulesParamChange();
+
+
+
 
     QStringList getSections(const QString &id, const QString &string);
     int getArgs(const ProcInfo *info, ArgList *argList);

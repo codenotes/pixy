@@ -55,9 +55,17 @@
     <addaction name="actionRaw_video"/>
     <addaction name="actionCooked_video"/>
    </widget>
+   <widget class="QMenu" name="menuCam_Select">
+    <property name="title">
+     <string>Cam Select</string>
+    </property>
+    <addaction name="actionCamera_1"/>
+    <addaction name="actionCamera2"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuAction"/>
    <addaction name="menuHelp"/>
+   <addaction name="menuCam_Select"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <widget class="QToolBar" name="toolBar">
@@ -149,8 +157,35 @@
     <string>Load Pixy parameters...</string>
    </property>
   </action>
+  <action name="actionCamera_1">
+   <property name="text">
+    <string>Camera 1</string>
+   </property>
+  </action>
+  <action name="actionCamera2">
+   <property name="text">
+    <string>Camera2</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>actionCamera2</sender>
+   <signal>triggered()</signal>
+   <receiver>actionCamera2</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

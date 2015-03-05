@@ -44,7 +44,9 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(int argc, char *argv[], QWidget *parent = 0);
-    ~MainWindow();
+	void logConsole(char * message);
+	void SwitchCameraClose();
+	~MainWindow();
 
     friend class VideoWidget;
     friend class ConsoleWidget;
@@ -52,7 +54,8 @@ public:
 private slots:
     void handleRunState(int state);
     void handleConnected(Device device, bool state);
-    void handleActions();
+	void handleCameraButtons();
+	void handleActions();
     void handleActionScriptlet(QString action, QStringList scriptlet);
     void handleLoadParams();
     void handleConfigDialogFinished();
@@ -69,6 +72,9 @@ private slots:
     void on_actionExit_triggered();
     void on_actionRaw_video_triggered();
     void on_actionCooked_video_triggered();
+	void cam2();
+	void cam1();
+
 
 protected:
      void closeEvent(QCloseEvent *event);

@@ -39,6 +39,8 @@ public:
     QAction *actionDefault_program;
     QAction *actionSave_Pixy_parameters;
     QAction *actionLoad_Pixy_parameters;
+    QAction *actionCamera_1;
+    QAction *actionCamera2;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QGridLayout *imageLayout;
@@ -46,6 +48,7 @@ public:
     QMenu *menuFile;
     QMenu *menuHelp;
     QMenu *menuAction;
+    QMenu *menuCam_Select;
     QStatusBar *statusBar;
     QToolBar *toolBar;
 
@@ -80,6 +83,10 @@ public:
         actionSave_Pixy_parameters->setObjectName(QStringLiteral("actionSave_Pixy_parameters"));
         actionLoad_Pixy_parameters = new QAction(MainWindow);
         actionLoad_Pixy_parameters->setObjectName(QStringLiteral("actionLoad_Pixy_parameters"));
+        actionCamera_1 = new QAction(MainWindow);
+        actionCamera_1->setObjectName(QStringLiteral("actionCamera_1"));
+        actionCamera2 = new QAction(MainWindow);
+        actionCamera2->setObjectName(QStringLiteral("actionCamera_2"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -102,6 +109,8 @@ public:
         menuHelp->setObjectName(QStringLiteral("menuHelp"));
         menuAction = new QMenu(menuBar);
         menuAction->setObjectName(QStringLiteral("menuAction"));
+        menuCam_Select = new QMenu(menuBar);
+        menuCam_Select->setObjectName(QStringLiteral("menuCam_Select"));
         MainWindow->setMenuBar(menuBar);
         statusBar = new QStatusBar(MainWindow);
         statusBar->setObjectName(QStringLiteral("statusBar"));
@@ -113,6 +122,7 @@ public:
         menuBar->addAction(menuFile->menuAction());
         menuBar->addAction(menuAction->menuAction());
         menuBar->addAction(menuHelp->menuAction());
+        menuBar->addAction(menuCam_Select->menuAction());
         menuFile->addAction(actionConfigure);
         menuFile->addAction(actionSave_Pixy_parameters);
         menuFile->addAction(actionLoad_Pixy_parameters);
@@ -124,8 +134,14 @@ public:
         menuAction->addAction(actionDefault_program);
         menuAction->addAction(actionRaw_video);
         menuAction->addAction(actionCooked_video);
+       
+		
+		menuCam_Select->addAction(actionCamera_1);
+        menuCam_Select->addAction(actionCamera2);
 
         retranslateUi(MainWindow);
+		QObject::connect(actionCamera2, SIGNAL(triggered()), MainWindow, SLOT(cam2()));
+		QObject::connect(actionCamera_1, SIGNAL(triggered()), MainWindow, SLOT(cam1()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -157,9 +173,12 @@ public:
         actionDefault_program->setText(QApplication::translate("MainWindow", "Default program", 0));
         actionSave_Pixy_parameters->setText(QApplication::translate("MainWindow", "Save Pixy parameters...", 0));
         actionLoad_Pixy_parameters->setText(QApplication::translate("MainWindow", "Load Pixy parameters...", 0));
+        actionCamera_1->setText(QApplication::translate("MainWindow", "Camera 1", 0));
+        actionCamera2->setText(QApplication::translate("MainWindow", "Camera2", 0));
         menuFile->setTitle(QApplication::translate("MainWindow", "File", 0));
         menuHelp->setTitle(QApplication::translate("MainWindow", "Help", 0));
         menuAction->setTitle(QApplication::translate("MainWindow", "Action", 0));
+        menuCam_Select->setTitle(QApplication::translate("MainWindow", "Cam Select", 0));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", 0));
     } // retranslateUi
 

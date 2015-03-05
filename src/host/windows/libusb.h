@@ -12,7 +12,7 @@
 //
 // end license header
 //
-
+#pragma warning( disable : 4200)
 /*
  * Public libusbx header file
  * Copyright © 2001 Johannes Erdfelt <johannes@erdfelt.com>

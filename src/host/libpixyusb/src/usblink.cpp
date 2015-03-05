@@ -187,7 +187,7 @@ int USBLink::open2(int pix)
 	int r;
 
 	int return_value;
-	int r;
+
 #ifdef __MACOS__
 	const unsigned int MILLISECONDS_TO_SLEEP = 100;
 #endif
