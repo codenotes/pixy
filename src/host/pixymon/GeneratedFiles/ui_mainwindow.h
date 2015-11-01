@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.4.0
+** Created by: Qt User Interface Compiler version 5.4.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -86,7 +86,7 @@ public:
         actionCamera_1 = new QAction(MainWindow);
         actionCamera_1->setObjectName(QStringLiteral("actionCamera_1"));
         actionCamera2 = new QAction(MainWindow);
-        actionCamera2->setObjectName(QStringLiteral("actionCamera_2"));
+        actionCamera2->setObjectName(QStringLiteral("actionCamera2"));
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -134,14 +134,11 @@ public:
         menuAction->addAction(actionDefault_program);
         menuAction->addAction(actionRaw_video);
         menuAction->addAction(actionCooked_video);
-       
-		
-		menuCam_Select->addAction(actionCamera_1);
+        menuCam_Select->addAction(actionCamera_1);
         menuCam_Select->addAction(actionCamera2);
 
         retranslateUi(MainWindow);
-		QObject::connect(actionCamera2, SIGNAL(triggered()), MainWindow, SLOT(cam2()));
-		QObject::connect(actionCamera_1, SIGNAL(triggered()), MainWindow, SLOT(cam1()));
+        QObject::connect(actionCamera2, SIGNAL(triggered()), actionCamera2, SLOT(trigger()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi

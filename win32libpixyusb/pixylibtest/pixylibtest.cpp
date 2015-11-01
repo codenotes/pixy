@@ -1,5 +1,7 @@
 // pixylibtest.cpp : Defines the entry point for the console application.
 //
+
+
 #pragma warning(disable:4244)
 #pragma warning(disable:4101)
 #pragma warning(disable:4305)
@@ -9,8 +11,9 @@
 #include "stdafx.h"
 #include <algorithm>
 
-#pragma comment(lib, "wstp32i4.lib")
+//#pragma comment(lib, "wstp32i4.lib")
 
+#define BASELINE_MM 114
 #define ROS_INDIGO_EXPORTS __declspec(dllimport)
 
 namespace ROSInterop
@@ -49,7 +52,7 @@ bool printFrame(int whichPix, int sig);
 // end license header
 //
 
-#pragma comment(lib, R"(C:\Users\gbrill\Source\Repos\ROSIndigo\ROSIndigoDLL\Debug\ROSClientInterop.lib)")
+//#pragma comment(lib, R"(C:\Users\gbrill\Source\Repos\ROSIndigo\ROSIndigoDLL\Debug\ROSClientInterop.lib)")
 
 
 void get_keypress(unsigned short& virtual_key, unsigned long& control_key)
@@ -147,8 +150,8 @@ void handle_SIGINT(int unused)
 bool bRun = true;
 
 
-
-int main(int argc, char * argv[])
+#ifdef ROSTEST
+int main_(int argc, char * argv[])
 {
 
 	ROSInterop::ROSInit(argc, (const char**)argv, "libpixy");
@@ -177,12 +180,12 @@ int main(int argc, char * argv[])
 	ROSInterop::terminateKeyboardMonitor();
 	ROSInterop::notifyPublisherQueue("pixy", 0); //kill publisher
 	ROSInterop::sleepThread(1000);
-
+	return 0;
 }
+#endif
 
 
-
-int main_(int argc, char * argv[])
+int main(int argc, char * argv[])
 {
 	int      i = 0;
 	int      index;
@@ -344,26 +347,26 @@ int main_(int argc, char * argv[])
 }
 
 
-static float DisparityToDistance(float disparity_pixels,
-	float focal_length_mm,
-	float sensor_pixels_per_mm,
-	float baseline_mm)
-{
-	float focal_length_pixels = focal_length_mm * sensor_pixels_per_mm;
-	float distance_mm = baseline_mm * focal_length_pixels / disparity_pixels;
-	return(distance_mm);
-}
-
-float dist2(int disp)
-{
-	float focal_length_mm = 2.8f;
-		float sensor_pixels_per_mm = 3.016;
-		float scale = .15;
-		float baseline_mm = 146.685;
-		return baseline_mm * (focal_length_mm * sensor_pixels_per_mm) / (disp*scale);
-
-
-}
+//static float DisparityToDistance(float disparity_pixels,
+//	float focal_length_mm,
+//	float sensor_pixels_per_mm,
+//	float baseline_mm)
+//{
+//	float focal_length_pixels = focal_length_mm * sensor_pixels_per_mm;
+//	float distance_mm = baseline_mm * focal_length_pixels / disparity_pixels;
+//	return(distance_mm);
+//}
+//
+//float dist2(int disp)
+//{
+//	float focal_length_mm = 2.8f;
+//		float sensor_pixels_per_mm = 3.016;
+//		float scale = .15;
+//		float baseline_mm = BASELINE_MM;
+//		return baseline_mm * (focal_length_mm * sensor_pixels_per_mm) / (disp*scale);
+//
+//
+//}
 //float distance_mm = baseline_mm * (focal_length_mm * sensor_pixels_per_mm) / disparity_pixels;
 
 //x = 146.685*(2.8 * 3.016)/137.16
@@ -380,11 +383,11 @@ float dist2(int disp)
 float distanceCalc(int whichPix, int x)
 {
 	float sensor_pixels_per_mm = 3.016;
-	double baseline_mm = 203.2;
+	double baseline_mm = BASELINE_MM;// 203.2;
 	static int last_x1 = 0;
 	static int last_x2 = 0;
 	float scale = .3;
-	double fov =  2.55; //says fov is 2.8 but I dunno.  playig with this number to see if I get diff results
+	double fov = 2.8;// 2.55; //says fov is 2.8 but I dunno.  playig with this number to see if I get diff results
 	
 	double disp;
 	double av;

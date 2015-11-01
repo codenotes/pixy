@@ -29,9 +29,9 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Library Include="Debug\boost_chrono-vc120-mt-gd-1_57.lib" />
-    <Library Include="Debug\boost_system-vc120-mt-gd-1_57.lib" />
-    <Library Include="Debug\boost_thread-vc120-mt-gd-1_57.lib" />
     <Library Include="Debug\libusb-1.0.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Text.txt" />
   </ItemGroup>
 </Project>
